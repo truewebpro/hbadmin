@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Validator;
 use Tymon\JWTAuth\Facades\JWTAuth;
 
 class AuthController extends Controller
@@ -63,6 +64,29 @@ class AuthController extends Controller
             'message' => 'User registered successfully',
             'token' => $token,
             'user' => $user,
+        ]);
+    }
+
+    public function apiChangePassword(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'email' => 'required|email|exists:users',
+            'password' => 'required|min:6',
+        ]);
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'message' => $validator->errors()->first(),
+            ]);
+        }
+        $user = User::where('email', $request->email)->first();
+        $user->update([
+            'password' => bcrypt($request->password),
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Password Changed successfully',
         ]);
     }
 }

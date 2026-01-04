@@ -10,7 +10,8 @@ use App\Http\Controllers\AuthController;
 Route::post('/stripe/webhook', [StripeWebhookController::class,'webhook']);
 Route::post('/auth/login', [AuthController::class, 'apiLogin']);
 Route::post('/auth/register', [AuthController::class, 'apiRegister']);
-Route::post('/stripe/subscription/completed', [PackageController::class, 'updateSubscription']);
+Route::post('/stripe/subscription/completed', [PackageController::class, 'completedSubscription']);
+Route::post('/stripe/subscription/update', [PackageController::class, 'updateSubscription']);
 
 Route::middleware('auth:api')->group(function () {
     Route::get('/user', [AuthController::class, 'apiUser']);

@@ -66,6 +66,7 @@ class StripeWebhookController extends Controller
 
             default:
                 Log::info("Unhandled Stripe event", ['type' => $event->type]);
+                Log::info("Event data", $event->data->toArray());
         }
 
         return response()->json(['status' => 'success']);

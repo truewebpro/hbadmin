@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\CatController;
+use App\Http\Controllers\PackageController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
@@ -19,6 +20,7 @@ Route::prefix('admin')->group(function () {
 });
 
 Route::prefix('v1')->group(function () {
+    Route::get('/packages', [PackageController::class, 'getPackages']);
     Route::get('/cats', [CatController::class, 'allCats']);
     Route::get('/cats-with-subcats', [CatController::class, 'allCatsWithSubcats']);
     Route::get('/cat/{cat_slug}', [CatController::class, 'getCatBySlug']);

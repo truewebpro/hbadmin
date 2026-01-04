@@ -17,4 +17,6 @@ class Package extends Model
         'package_price',
         'stripe_id',
     ];
+
+    public $hidden = ['created_at', 'updated_at'];
 }

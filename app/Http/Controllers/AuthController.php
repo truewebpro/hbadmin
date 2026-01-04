@@ -30,11 +30,12 @@ class AuthController extends Controller
         if($user){
             return response()->json([
                 'success' => true,
-                'user' => $user->only(['id', 'name', 'email', 'role']),
+                'user' => $user,
                 'package_tier' => $user->package_tier,
                 'features' => $user->tierFeatures(),
                 'has_access' => $user->hasAccess('forum_access'),
-                'is_active' => !$user->package_expires_at || now()->lt($user->package_expires_at)
+                'is_active' => !$user->package_expires_at || now()->lt($user->package_expires_at),
+                'created_at' => $user->created_at,
             ]);
         } else {
             return response()->json(['error' => 'invalid_credentials'], 401);
@@ -64,6 +65,7 @@ class AuthController extends Controller
                 'features' => $currentUser->tierFeatures(),
                 'is_active' => !$currentUser->package_expires_at || now()->lt($currentUser->package_expires_at),
                 'created_at' => $currentUser->created_at,
+                'updated_at' => $currentUser->updated_at,
             ],
         ]);
     }

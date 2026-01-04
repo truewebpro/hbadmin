@@ -18,7 +18,6 @@ class PackageController extends Controller
 
     public function updateSubscription(Request $request)
     {
-//        $user = auth()->user();
         $payment = Payment::create([
             'user_id' => $request->get('user_id'),
             'package_tier' => $request->get('package_tier'),
@@ -35,12 +34,10 @@ class PackageController extends Controller
 
 
         Log::info("request Detail",$request->all());
-        Log::info("payment Detail",$payment);
         return response()->json([
             'success' => true,
             'message' => 'Subscription updated successfully',
             'payment' => $payment
-
         ]);
     }
 }

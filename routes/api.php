@@ -2,17 +2,20 @@
 
 use App\Http\Controllers\CatController;
 use App\Http\Controllers\PackageController;
+use App\Http\Controllers\StripeWebhookController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 
-
+Route::post('/stripe/webhook', [StripeWebhookController::class,'webhook']);
 Route::post('/auth/login', [AuthController::class, 'apiLogin']);
 Route::post('/auth/register', [AuthController::class, 'apiRegister']);
+Route::post('/stripe/subscription/completed', [PackageController::class, 'updateSubscription']);
 
 Route::middleware('auth:api')->group(function () {
     Route::get('/user', [AuthController::class, 'apiUser']);
     Route::post('/change-password', [AuthController::class, 'apiChangePassword']);
+
 });
 
 Route::prefix('admin')->group(function () {

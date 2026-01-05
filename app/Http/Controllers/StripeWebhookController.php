@@ -2,9 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Payment;
 use App\Models\StripePayment;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
+use Stripe\Stripe;
 use Stripe\Webhook;
 
 class StripeWebhookController extends Controller
@@ -44,6 +47,33 @@ class StripeWebhookController extends Controller
         } catch (\Exception $e) {
             // Some other error
             return response()->json(['error' => $e->getMessage()], 500);
+        }
+        if($event->type === 'invoice.payment_succeeded'){
+            $invoice = $event->data->object;
+            $subscriptionId = $invoice->subscription;
+            $customerId = $invoice->customer;
+            Stripe::setApiKey(config('services.stripe.secret'));
+            $subscription = \Stripe\Subscription::retrieve($subscriptionId);
+
+            $meta = $subscription->metadata ?? null;
+            $userId = $meta->userId ?? null;
+            $packageName = $meta->packageName ?? null;
+            $priceId = $meta->priceId ?? null;
+            if ($userId && $packageName && $priceId) {
+                $user = User::find($userId);
+                if($user){
+                    Payment::create([
+                        'user_id' => $userId,
+                        'package_tier' => $packageName,
+                        'stripe_customer_id' => $customerId,
+                        'stripe_subscription_id' => $subscriptionId,
+                        'stripe_price_id' => $priceId,
+                    ]);
+                    $user->update([
+                        'package_tier' => $packageName,
+                    ]);
+                }
+            }
         }
         switch ($event->type) {
             case 'checkout.session.completed':

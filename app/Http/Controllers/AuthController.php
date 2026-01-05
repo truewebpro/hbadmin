@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Payment;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -41,6 +42,28 @@ class AuthController extends Controller
             return response()->json(['error' => 'invalid_credentials'], 401);
         }
 
+    }
+
+    public function getStripeDetails(Request $request)
+    {
+        $user = auth('api')->user();
+        if($user){
+            $payment = Payment::where('user_id','=',$user->id)->latest()->first();
+            if($payment){
+                return response()->json([
+                    'success' => true,
+                    'user' => $user,
+                    'payment' => $payment
+                ]);
+            } else {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'No user payment found',
+                    'user' => $user,
+                    'payment' => null
+                ]);
+            }
+        }
     }
 
     protected function respondWithToken($token,$user = null)
@@ -111,4 +134,6 @@ class AuthController extends Controller
             'message' => 'Password Changed successfully',
         ]);
     }
+
+
 }

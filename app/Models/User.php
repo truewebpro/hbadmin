@@ -9,6 +9,7 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 use Tymon\JWTAuth\Contracts\JWTSubject;
+use Carbon\Carbon;
 
 class User extends Authenticatable implements JWTSubject
 {
@@ -46,6 +47,7 @@ class User extends Authenticatable implements JWTSubject
     protected $casts = [
         'email_verified_at' => 'datetime',
         'password' => 'hashed',
+        'package_expires_at' => 'datetime',
     ];
 
     public function getJWTIdentifier()
@@ -56,7 +58,9 @@ class User extends Authenticatable implements JWTSubject
     {
         return [
             'package_tier' => $this->package_tier,
-            'package_expires_at' => $this->package_expires_at?->toIso8601String(),
+            'package_expires_at' => $this->package_expires_at
+                ? $this->package_expires_at->toIso8601String()
+                : null,
             'features' => $this->tierFeatures(),
         ];
     }

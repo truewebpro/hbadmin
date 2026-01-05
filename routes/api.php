@@ -15,6 +15,7 @@ Route::post('/stripe/subscription/update', [PackageController::class, 'updateSub
 
 Route::middleware('auth:api')->group(function () {
     Route::get('/user', [AuthController::class, 'apiUser']);
+    Route::get('/user/stripe/payment/detail', [AuthController::class, 'getStripeDetails']);
     Route::post('/change-password', [AuthController::class, 'apiChangePassword']);
 
 });
@@ -23,7 +24,7 @@ Route::prefix('admin')->group(function () {
     Route::get('/', [AuthController::class, 'apiIndex']);
 });
 
-Route::prefix('v1')->group(function () {
+Route::prefix('hba')->group(function () {
     Route::get('/packages', [PackageController::class, 'getPackages']);
     Route::get('/cats', [CatController::class, 'allCats']);
     Route::get('/cats-with-subcats', [CatController::class, 'allCatsWithSubcats']);

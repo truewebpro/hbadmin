@@ -52,13 +52,25 @@ class StripeWebhookController extends Controller
             $invoice = $event->data->object;
             $subscriptionId = $invoice->subscription;
             $customerId = $invoice->customer;
+            $lineItems = $invoice->lines->data[0] ?? null;
             Stripe::setApiKey(config('services.stripe.secret'));
             $subscription = \Stripe\Subscription::retrieve($subscriptionId);
-
+            $price_id = $lineItems->price->id;
+            $nickName = $lineItems->price->nickname;
+            if($nickName === "hba_approved_member"){
+                $pname = "approved";
+            } elseif ($nickName === "hba_premium_member"){
+                $pname = "premium";
+            } else {
+                $pname = "standard";
+            }
+            $email = $invoice->customer_email;
+            $isPaid = $invoice->paid ?? false;
+            $user = User::where('email','=', $email)->first();
             $meta = $subscription->metadata ?? null;
-            $userId = $meta->userId ?? null;
-            $packageName = $meta->packageName ?? null;
-            $priceId = $meta->priceId ?? null;
+            $userId = $user->id ?? $meta->userId;
+            $packageName = $pname ?? $meta->packageName;
+            $priceId = $price_id ?? $meta->priceId;
             if ($userId && $packageName && $priceId) {
                 $user = User::find($userId);
                 if($user){
